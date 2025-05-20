@@ -1,0 +1,36 @@
+import javax.swing.*;
+import javiergs.mqtt.Publisher;
+
+public class PongMain {
+    public static void main(String[] args) {
+        // Start the MQTT publisher thread
+        Publisher publisher = new Publisher();
+        Thread mqttThread = new Thread(publisher);
+        mqttThread.start();
+
+        // Create the frame
+        JFrame frame = new JFrame("Pong Game");
+
+        // Add the PongPanel
+        PongPanel pongPanel = new PongPanel();
+        frame.add(pongPanel);
+
+        // Set default behaviors
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack(); // Adjust frame to preferred size of PongPanel (800x600)
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null); // Center the window
+        frame.setVisible(true);
+
+        // Optionally, add a shutdown hook to stop the publisher cleanly when app exits
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            publisher.stop();
+            try {
+                mqttThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("MQTT publisher stopped on exit.");
+        }));
+    }
+}
