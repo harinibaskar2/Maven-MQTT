@@ -1,6 +1,10 @@
 import javax.swing.*;
 import javiergs.mqtt.Publisher;
 
+
+
+@author hbaskar
+@version 1.0
 public class PongMain {
     public static void main(String[] args) {
         // Start the MQTT publisher thread

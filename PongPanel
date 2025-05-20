@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
 /**
  * This class is a simple JPanel that will be used to display the Bars and Ball.
  *
- * @author javiergs
+ * @author hbaskar
  * @version 1.0
  */
 public class PongPanel extends JPanel implements ActionListener, MouseMotionListener, MouseListener {

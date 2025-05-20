@@ -4,6 +4,8 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+
+@author hbaskar
 /**
  * Runnable MQTT Publisher that continuously sends messages to a TOPIC.
  * The broker is test.mosquitto.org and the TOPIC is cal-poly/csc/309.

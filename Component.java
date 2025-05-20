@@ -1,4 +1,4 @@
-package Lab7;
+
 
 /**
  * Component class defines the root for decoration/composition

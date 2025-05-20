@@ -8,7 +8,7 @@ import java.io.IOException;
  * Main class for the Pong Game Server.
  * It creates the GUI and starts the server.
  *
- * @author javiergs
+ * @author hbaskar
  * @version 1.0
  */
 public class PongGameServer extends JFrame {

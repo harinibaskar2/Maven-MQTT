@@ -1,12 +1,12 @@
-package Paint;
+
 
 import javax.swing.*;
 import java.awt.*;
 
-public class mainhw extends JFrame{
+public class main extends JFrame{
 
     public static void main(String[] args) {
-        mainhw app = new mainhw();
+        main app = new main();
         app.setSize(800,600);
         app.setTitle("First Attempt at drawing appli");
         app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -14,7 +14,7 @@ public class mainhw extends JFrame{
         app.setVisible(true);
     }
 
-    public mainhw(){
+    public main(){
         JPanel drawPanel = new drawpanel();
         JPanel toolPanel = new toolpanel();
         JPanel statusPanel = new statuspanel();
