@@ -2,28 +2,24 @@ package javiergs;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 /**
- * This class is a simple JPanel that will be used to display the Bars and Ball.
+ * This class is a simple JPanel that will be used to display the Bars, Ball, and Chat.
  *
  * @author hbaskar
- * @version 1.0
+ * @version 1.1
  */
+
+
+
+
+
 public class PongPanel extends JPanel implements ActionListener, MouseMotionListener, MouseListener {
 
-    public PongPanel() {
-        addMouseMotionListener(this);
-        addMouseListener(this);
-        setBackground(new Color(172, 248, 199));
-        Timer timer = new Timer(1000 / 30, this);
-        timer.start();
-    }
 
+
+  
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -31,11 +27,17 @@ public class PongPanel extends JPanel implements ActionListener, MouseMotionList
         drawBall(g);
         drawClientPlayer(g);
         drawServerPlayer(g);
+        drawChat(g); // NEW
+    }
+
+    private void drawChat(Graphics g) {
+        if (chatPanel != null) {
+            chatPanel.draw(g, 20, getHeight() - 90); // Adjust Y based on where you want it to show
+        }
     }
 
     private void drawCenterLine(Graphics g) {
         g.setColor(Color.WHITE);
-        // make dashed line
         Graphics2D g2d = (Graphics2D) g;
         float[] dash1 = {10.0f};
         BasicStroke dashed = new BasicStroke(
@@ -51,32 +53,24 @@ public class PongPanel extends JPanel implements ActionListener, MouseMotionList
     }
 
     private void drawClientPlayer(Graphics g) {
-        int y = PongBrain.getInstance().getClientPlayerY();
-        if (PongBrain.getInstance().getWhoAmI() == PongBrain.SERVER) {
-            g.setColor(Color.DARK_GRAY);
-        } else {
-            g.setColor(Color.WHITE);
-        }
+        int y = Repository.getInstance().getClientPlayerY();
+        g.setColor(Repository.getInstance().getWhoAmI() == Repository.SERVER ? Color.DARK_GRAY : Color.WHITE);
         g.fillRect(10, y, 10, 50);
     }
 
     private void drawServerPlayer(Graphics g) {
-        int y = PongBrain.getInstance().getServerPlayerY();
-        if (PongBrain.getInstance().getWhoAmI() == PongBrain.SERVER) {
-            g.setColor(Color.DARK_GRAY);
-        } else {
-            g.setColor(Color.WHITE);
-        }
-        g.fillRect(780, y, 10, 50); // I assume server player is on the right side (x=780)
+        int y = Repository.getInstance().getServerPlayerY();
+        g.setColor(Repository.getInstance().getWhoAmI() == Repository.SERVER ? Color.DARK_GRAY : Color.WHITE);
+        g.fillRect(780, y, 10, 50);
     }
 
     private void drawBall(Graphics g) {
-        int x = PongBrain.getInstance().getBallX();
-        int y = PongBrain.getInstance().getBallY();
+        int x = Repository.getInstance().getBallX();
+        int y = Repository.getInstance().getBallY();
         if (x == 400) {
             g.setColor(new Color(172, 248, 199));
-        } else if ((PongBrain.getInstance().getWhoAmI() == PongBrain.SERVER && x <= 400) ||
-                (PongBrain.getInstance().getWhoAmI() == PongBrain.CLIENT && x >= 400)) {
+        } else if ((Repository.getInstance().getWhoAmI() == Repository.SERVER && x <= 400) ||
+                (Repository.getInstance().getWhoAmI() == Repository.CLIENT && x >= 400)) {
             g.setColor(Color.DARK_GRAY);
         } else {
             g.setColor(Color.WHITE);
@@ -89,61 +83,37 @@ public class PongPanel extends JPanel implements ActionListener, MouseMotionList
         return new Dimension(800, 600);
     }
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        // not used
-    }
+    @Override public void mouseDragged(MouseEvent e) {}
+    @Override public void mousePressed(MouseEvent e) {}
+    @Override public void mouseReleased(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (PongBrain.getInstance().getWhoAmI() == PongBrain.CLIENT)
-            PongBrain.getInstance().setClientPlayerY(e.getY());
+        if (Repository.getInstance().getWhoAmI() == Repository.CLIENT)
+            Repository.getInstance().setClientPlayerY(e.getY());
         else
-            PongBrain.getInstance().setServerPlayerY(e.getY());
+            Repository.getInstance().setServerPlayerY(e.getY());
         repaint();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        PongBrain.getInstance().moveBall();
+        Repository.getInstance().moveBall();
         repaint();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        // not used
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        // not used
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        // not used
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        // not used
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         int mouseX = e.getX();
         int mouseY = e.getY();
+        int ballX = Repository.getInstance().getBallX();
+        int ballY = Repository.getInstance().getBallY();
 
-        int ballX = PongBrain.getInstance().getBallX();
-        int ballY = PongBrain.getInstance().getBallY();
-
-        // Check if click is within the ball
         if (mouseX >= ballX - 5 && mouseX <= ballX + 5 &&
                 mouseY >= ballY - 5 && mouseY <= ballY + 5) {
-
             System.out.println("Ball clicked at: " + mouseX + ", " + mouseY);
-
-            // Use Repository singleton to send coordinates
             Repository.getInstance().setCoordinates(mouseX, mouseY);
         }
     }

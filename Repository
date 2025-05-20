@@ -1,14 +1,44 @@
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-
-@author hbaskar
+/**
+ *
+ * @author hbaskar
+ * @version 1.3
+ */
 public class Repository {
     private static Repository instance;
 
-    private int x;
-    private int y;
+    private int ballX;
+    private int ballY;
+    private int clientPlayerY;
+    private int serverPlayerY;
+    private int direction;
+    private int whoAmI;
+
+    private MqttClient client;
+    private final String BROKER = "tcp://test.mosquitto.org:1883";
+    private final String TOPIC = "cal-poly/csc/309";
+
+    private static final int RIGHT = 0;
+    private static final int LEFT = 1;
 
     private Repository() {
-        // private constructor to prevent external instantiation
+        ballX = 400;
+        ballY = 300;
+        clientPlayerY = 250;
+        serverPlayerY = 250;
+        direction = RIGHT;
+        whoAmI = 0; // example default SERVER
+
+        try {
+            client = new MqttClient(BROKER, MqttClient.generateClientId());
+            client.connect();
+            System.out.println("Connected to MQTT Broker");
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Repository getInstance() {
@@ -22,20 +52,119 @@ public class Repository {
         return instance;
     }
 
-    // Set coordinates (called by PongPanel)
+    // Getters and setters
+
+    public int getBallX() {
+        return ballX;
+    }
+
+    public void setBallX(int ballX) {
+        this.ballX = ballX;
+    }
+
+    public int getBallY() {
+        return ballY;
+    }
+
+    public void setBallY(int ballY) {
+        this.ballY = ballY;
+    }
+
+    public int getClientPlayerY() {
+        return clientPlayerY;
+    }
+
+    public void setClientPlayerY(int clientPlayerY) {
+        this.clientPlayerY = clientPlayerY;
+    }
+
+    public int getServerPlayerY() {
+        return serverPlayerY;
+    }
+
+    public void setServerPlayerY(int serverPlayerY) {
+        this.serverPlayerY = serverPlayerY;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
+    public int getWhoAmI() {
+        return whoAmI;
+    }
+
+    public void setWhoAmI(int whoAmI) {
+        this.whoAmI = whoAmI;
+    }
+
+    // Move ball logic
+    public void moveBall() {
+        if (direction == RIGHT)
+            ballX += 10;
+        else
+            ballX -= 10;
+
+        if (ballX >= 800 || ballX <= 0)
+            ballX = 400;
+
+        if (collision()) {
+            direction = (direction == RIGHT) ? LEFT : RIGHT;
+        }
+    }
+
+    private boolean collision() {
+        if (ballX == 20 &&
+            ballY >= serverPlayerY &&
+            ballY <= serverPlayerY + 50)
+            return true;
+
+        if (ballX == 780 &&
+            ballY >= clientPlayerY &&
+            ballY <= clientPlayerY + 50)
+            return true;
+
+        return false;
+    }
+
+    // Store coordinates and publish via MQTT
     public void setCoordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.ballX = x;
+        this.ballY = y;
         publishCoordinates();
     }
 
-    // Getters if needed
-    public int getX() { return x; }
-    public int getY() { return y; }
-
-    // Method to send data to publisher
     private void publishCoordinates() {
-        coordinate coord = new coordinate(x, y);
-        MqttPublisher.publishCoordinate(coord);
+        if (client == null || !client.isConnected()) {
+            System.err.println("MQTT client not connected");
+            return;
+        }
+
+        String payload = String.format("{\"x\":%d,\"y\":%d}", ballX, ballY);
+
+        try {
+            MqttMessage message = new MqttMessage(payload.getBytes());
+            message.setQos(2);
+            client.publish(TOPIC, message);
+            System.out.println("Published coordinates: " + payload);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Disconnect from MQTT broker when done
+    public void disconnect() {
+        try {
+            if (client != null && client.isConnected()) {
+                client.disconnect();
+                System.out.println("Disconnected from MQTT Broker");
+            }
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,15 +1,15 @@
-package javiergs.mqtt;
+
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-
-@author hbaskar
 /**
  * Runnable MQTT Publisher that continuously sends messages to a TOPIC.
  * The broker is test.mosquitto.org and the TOPIC is cal-poly/csc/309.
  * Can be run in a separate thread.
+ * @author hbaskar
+ * @version 1.1
  */
 public class Publisher implements Runnable {
 
