@@ -59,10 +59,4 @@ public class PongPanel extends JPanel implements MouseListener {
         // Publish coordinates via MQTT publisher class
         MqttPublisher.publishCoordinates(mouseX, mouseY);
     }
-
-    // Timer callback
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        repaint(); // Repaint on timer tick
-    }
 }
