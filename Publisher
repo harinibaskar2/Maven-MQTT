@@ -1,13 +1,10 @@
-
-
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
- * Runnable MQTT Publisher that continuously sends messages to a TOPIC.
- * The broker is test.mosquitto.org and the TOPIC is cal-poly/csc/309.
- * Can be run in a separate thread.
+ * Runnable MQTT Publisher that continuously sends coordinates from the Repository
+ * to a TOPIC on the test.mosquitto.org broker.
  * @author hbaskar
  * @version 1.1
  */
@@ -29,20 +26,20 @@ public class Publisher implements Runnable {
             MqttClient client = new MqttClient(BROKER, CLIENT_ID);
             client.connect();
             System.out.println("Connected to BROKER: " + BROKER);
-            int counter = 0;
 
             while (running) {
-                String content = "this is message " + counter;
+                int x = Repository.getInstance().getBallX();
+                int y = Repository.getInstance().getBallY();
+                String content = String.format("{\"x\":%d,\"y\":%d}", x, y);
                 MqttMessage message = new MqttMessage(content.getBytes());
                 message.setQos(2);
 
                 if (client.isConnected()) {
                     client.publish(TOPIC, message);
-                    System.out.println("Message published: " + content);
+                    System.out.println("Published coordinates: " + content);
                 }
 
-                counter++;
-                Thread.sleep(5000);
+                Thread.sleep(5000); // wait 5 seconds before sending again
             }
 
             client.disconnect();

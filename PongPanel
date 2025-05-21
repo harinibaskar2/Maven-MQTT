@@ -17,6 +17,14 @@ import java.awt.event.*;
 
 public class PongPanel extends JPanel implements ActionListener, MouseMotionListener, MouseListener {
 
+        public PongPanel() {
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        // Start a timer for ball movement every 50ms
+        Timer timer = new Timer(50, this);
+        timer.start();
+    }
+
 
 
   
@@ -27,14 +35,10 @@ public class PongPanel extends JPanel implements ActionListener, MouseMotionList
         drawBall(g);
         drawClientPlayer(g);
         drawServerPlayer(g);
-        drawChat(g); // NEW
+
     }
 
-    private void drawChat(Graphics g) {
-        if (chatPanel != null) {
-            chatPanel.draw(g, 20, getHeight() - 90); // Adjust Y based on where you want it to show
-        }
-    }
+
 
     private void drawCenterLine(Graphics g) {
         g.setColor(Color.WHITE);
