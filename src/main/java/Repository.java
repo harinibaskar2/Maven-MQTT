@@ -4,7 +4,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 
 /**
- * This class is a simple JPanel that will be used to display the Bars, Ball, and Chat.
+
  *
  * @author hbaskar
  * @version 1.1
