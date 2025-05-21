@@ -1,5 +1,3 @@
-
-
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -7,6 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 /**
  * Runnable MQTT Publisher that continuously sends coordinates from the Repository
  * to a TOPIC on the test.mosquitto.org broker.
+ * 
  * @author hbaskar
  * @version 1.1
  */
@@ -30,8 +29,10 @@ public class Publisher implements Runnable {
             System.out.println("Connected to BROKER: " + BROKER);
 
             while (running) {
-                int x = Repository.getInstance().getBallX();
-                int y = Repository.getInstance().getBallY();
+                // Use new generic coordinate getters
+                int x = Repository.getInstance().getX();
+                int y = Repository.getInstance().getY();
+
                 String content = String.format("{\"x\":%d,\"y\":%d}", x, y);
                 MqttMessage message = new MqttMessage(content.getBytes());
                 message.setQos(2);

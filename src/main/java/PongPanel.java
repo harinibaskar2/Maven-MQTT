@@ -20,7 +20,7 @@ import java.awt.event.*;
 
 
 
-public class PongPanel extends JPanel implements ActionListener, MouseMotionListener, MouseListener {
+public class PongPanel extends JPanel implements MouseMotionListener, MouseListener {
 
 
         public PongPanel() {

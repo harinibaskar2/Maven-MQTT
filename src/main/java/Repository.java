@@ -2,52 +2,17 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-
-/**
- *
- * Singleton class that acts as a shared data repository for the Pong game.
- * It stores the current coordinates of the ball, the positions of the client and server paddles,
- * the ball's direction, and the identity of the player (client or server).
- * 
- * This class also manages an MQTT client connection to a broker (test.mosquitto.org)
- * and publishes the ball coordinates to a specified MQTT topic.
- * 
- * It provides methods to update and retrieve game state information,
- * move the ball with collision detection, and publish updated coordinates over MQTT.
- * 
- * The singleton pattern ensures a single shared instance across the application.
- * @author hbaskar
- * @version 1.1
- */
 public class Repository {
-    
     private static Repository instance;
 
-    public static final int SERVER = 0;  // Added constant for SERVER
-    public static final int CLIENT = 1;  // Added constant for CLIENT
-
-    private int ballX;
-    private int ballY;
-    private int clientPlayerY;
-    private int serverPlayerY;
-    private int direction;
-    private int whoAmI;
+    private int x;
+    private int y;
 
     private MqttClient client;
     private final String BROKER = "tcp://test.mosquitto.org:1883";
     private final String TOPIC = "cal-poly/csc/309";
 
-    private static final int RIGHT = 0;
-    private static final int LEFT = 1;
-
     private Repository() {
-        ballX = 400;
-        ballY = 300;
-        clientPlayerY = 250;
-        serverPlayerY = 250;
-        direction = RIGHT;
-        whoAmI = SERVER; // Use SERVER constant here instead of raw 0
-
         try {
             client = new MqttClient(BROKER, MqttClient.generateClientId());
             client.connect();
@@ -68,100 +33,27 @@ public class Repository {
         return instance;
     }
 
-    // Getters and setters
-
-    public int getBallX() {
-        return ballX;
+    public synchronized void setCoordinates(int x, int y) {
+        this.x = x;
+        this.y = y;
+        publishCoordinates();  // publish immediately after updating
     }
 
-    public void setBallX(int ballX) {
-        this.ballX = ballX;
+    public synchronized int getX() {
+        return x;
     }
 
-    public int getBallY() {
-        return ballY;
+    public synchronized int getY() {
+        return y;
     }
 
-    public void setBallY(int ballY) {
-        this.ballY = ballY;
-    }
-
-    public int getClientPlayerY() {
-        return clientPlayerY;
-    }
-
-    public void setClientPlayerY(int clientPlayerY) {
-        this.clientPlayerY = clientPlayerY;
-    }
-
-    public int getServerPlayerY() {
-        return serverPlayerY;
-    }
-
-    public void setServerPlayerY(int serverPlayerY) {
-        this.serverPlayerY = serverPlayerY;
-    }
-
-    public int getDirection() {
-        return direction;
-    }
-
-    public void setDirection(int direction) {
-        this.direction = direction;
-    }
-
-    public int getWhoAmI() {
-        return whoAmI;
-    }
-
-    public void setWhoAmI(int whoAmI) {
-        this.whoAmI = whoAmI;
-    }
-
-    // Move ball logic
-    public void moveBall() {
-        if (direction == RIGHT)
-            ballX += 10;
-        else
-            ballX -= 10;
-
-        if (ballX >= 800 || ballX <= 0)
-            ballX = 400;
-
-        if (collision()) {
-            direction = (direction == RIGHT) ? LEFT : RIGHT;
-        }
-    }
-
-    private boolean collision() {
-        if (ballX == 20 &&
-            ballY >= serverPlayerY &&
-            ballY <= serverPlayerY + 50)
-            return true;
-
-        if (ballX == 780 &&
-            ballY >= clientPlayerY &&
-            ballY <= clientPlayerY + 50)
-            return true;
-
-        return false;
-    }
-
-    // Store coordinates and publish via MQTT
-    public void setCoordinates(int x, int y) {
-        this.ballX = x;
-        this.ballY = y;
-        publishCoordinates();
-    }
-
-    private void publishCoordinates() {
+    private synchronized void publishCoordinates() {
         if (client == null || !client.isConnected()) {
             System.err.println("MQTT client not connected");
             return;
         }
 
-        String payload = String.format("{\"x\":%d,\"y\":%d}", ballX, ballY);
-
+        String payload = String.format("{\"x\":%d,\"y\":%d}", x, y);
         try {
             MqttMessage message = new MqttMessage(payload.getBytes());
             message.setQos(2);
@@ -172,7 +64,6 @@ public class Repository {
         }
     }
 
-    // Disconnect from MQTT broker when done
     public void disconnect() {
         try {
             if (client != null && client.isConnected()) {
