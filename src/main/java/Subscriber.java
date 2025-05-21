@@ -57,8 +57,7 @@ public class Subscriber implements MqttCallback, Runnable {
 		int x = Integer.parseInt(content[0]);
 		int y = Integer.parseInt(content[1]);
 		Repository repo = repo.getInstance();
-		repo.setBallX(x);
-		repo.setBallY(y);
+		repo.setCoordinates(x, y);
 
 		if (subscriberScreen != null){
 			subscriberScreen.repaint();

@@ -12,6 +12,8 @@ import org.w3c.dom.events.MouseEvent;
  */
 
 public class SubscriberScreen extends JPanel implements MouseListener {
+    Repository repo = Repository.getInstance();
+
     public SubscriberScreen(){
         setBackground(new Color(255,255,255));
         addMouseListener(this);
@@ -22,8 +24,8 @@ public class SubscriberScreen extends JPanel implements MouseListener {
         super.paintComponent(g);
 
         Repository repo = Repository.getInstance();
-        int x = repo.getBallX();
-        int y = repo.getBallY();
+        int x = repo.getX();
+        int y = repo.getY();
 
         g.setColor(Color.BLACK);
         g.fillOval(x-10, y-10, 20, 20);
@@ -46,8 +48,13 @@ public class SubscriberScreen extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(java.awt.event.MouseEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mouseClicked'");
+        int mouseX = e.getX();
+        int mouseY = e.getY();
+
+        repo.setCoordinates(mouseX,mouseY);
+        repaint();
+
+        
     }
 
     @Override

@@ -53,7 +53,7 @@ public class Repository {
             return;
         }
 
-        String payload = String.format("{\"x\":%d,\"y\":%d}", x, y);
+        String payload = String.format("%d,%d", x, y);
         try {
             MqttMessage message = new MqttMessage(payload.getBytes());
             message.setQos(2);
