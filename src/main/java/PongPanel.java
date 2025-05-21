@@ -8,14 +8,11 @@ import java.awt.event.*;
  * @author hbaskar
  * @version 1.1
  */
-public class PongPanel extends JPanel implements MouseMotionListener, MouseListener, ActionListener {
+public class PongPanel extends JPanel implements MouseListener {
 
     public PongPanel() {
         addMouseListener(this);
-        addMouseMotionListener(this);
-        // Start a timer for updates
-        Timer timer = new Timer(50, this);
-        timer.start();
+
     }
 
     @Override
@@ -41,9 +38,7 @@ public class PongPanel extends JPanel implements MouseMotionListener, MouseListe
         return new Dimension(800, 600);
     }
 
-    // MouseMotionListener methods
-    @Override public void mouseDragged(MouseEvent e) {}
-    @Override public void mouseMoved(MouseEvent e) {}
+
 
     // MouseListener methods
     @Override public void mousePressed(MouseEvent e) {}
