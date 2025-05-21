@@ -13,16 +13,27 @@ public class PongPanel extends JPanel implements MouseMotionListener, MouseListe
     public PongPanel() {
         addMouseListener(this);
         addMouseMotionListener(this);
-        // Start a timer for any future updates (if needed)
+        // Start a timer for updates
         Timer timer = new Timer(50, this);
         timer.start();
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Clear the panel
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, getWidth(), getHeight());
+
+        // Get coordinates from Repository
+        Repository repo = Repository.getInstance();
+        int x = repo.getX();
+        int y = repo.getY();
+
+        // Draw a circle at the coordinates
+        g.setColor(Color.BLACK);
+        g.fillOval(x - 10, y - 10, 20, 20); // 20x20 circle centered at (x, y)
     }
 
     @Override
@@ -30,11 +41,11 @@ public class PongPanel extends JPanel implements MouseMotionListener, MouseListe
         return new Dimension(800, 600);
     }
 
-    // Empty implementations for MouseMotionListener
+    // MouseMotionListener methods
     @Override public void mouseDragged(MouseEvent e) {}
     @Override public void mouseMoved(MouseEvent e) {}
 
-    // Empty implementations for MouseListener except mouseClicked
+    // MouseListener methods
     @Override public void mousePressed(MouseEvent e) {}
     @Override public void mouseReleased(MouseEvent e) {}
     @Override public void mouseEntered(MouseEvent e) {}
@@ -54,11 +65,9 @@ public class PongPanel extends JPanel implements MouseMotionListener, MouseListe
         MqttPublisher.publishCoordinates(mouseX, mouseY);
     }
 
-    // Timer callback (required by ActionListener)
+    // Timer callback
     @Override
     public void actionPerformed(ActionEvent e) {
-        // If needed, update the panel or repaint here
-        // For now, just repaint
-        repaint();
+        repaint(); // Repaint on timer tick
     }
 }
