@@ -33,7 +33,7 @@ public class Publisher implements Runnable {
                 int x = Repository.getInstance().getX();
                 int y = Repository.getInstance().getY();
 
-                String content = String.format("{\"x\":%d,\"y\":%d}", x, y);
+                String content = String.format("%d,%d", x, y);
                 MqttMessage message = new MqttMessage(content.getBytes());
                 message.setQos(2);
 
