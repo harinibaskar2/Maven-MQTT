@@ -1,8 +1,13 @@
-package javiergs;
+
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
+
+
+
+
 
 /**
  * This class is a simple JPanel that will be used to display the Bars, Ball, and Chat.
@@ -16,6 +21,7 @@ import java.awt.event.*;
 
 
 public class PongPanel extends JPanel implements ActionListener, MouseMotionListener, MouseListener {
+
 
         public PongPanel() {
         addMouseListener(this);

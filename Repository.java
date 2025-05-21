@@ -2,6 +2,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+
 /**
  *
  * Singleton class that acts as a shared data repository for the Pong game.
@@ -19,7 +20,11 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * @version 1.1
  */
 public class Repository {
+    
     private static Repository instance;
+
+    public static final int SERVER = 0;  // Added constant for SERVER
+    public static final int CLIENT = 1;  // Added constant for CLIENT
 
     private int ballX;
     private int ballY;
@@ -41,7 +46,7 @@ public class Repository {
         clientPlayerY = 250;
         serverPlayerY = 250;
         direction = RIGHT;
-        whoAmI = 0; // example default SERVER
+        whoAmI = SERVER; // Use SERVER constant here instead of raw 0
 
         try {
             client = new MqttClient(BROKER, MqttClient.generateClientId());
